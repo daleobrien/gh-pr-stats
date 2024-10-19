@@ -23,7 +23,7 @@ cargo run
 And it will print out the following information:
 ```text
 
-Retrieving GitHub stats from up to the last 100 pull requests for Some-Organisation-Or-User/Some-repo-name ...
+Retrieving GitHub stats from up to the last 100 pull requests for Someone/Something ...
 
 Found a total of 96 PRs (with filters applied)
 ╭─────────────┬───────┬────────────┬────────────╮
