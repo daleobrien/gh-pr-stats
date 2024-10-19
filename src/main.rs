@@ -1,150 +1,25 @@
-use gql_client::Client;
-use std::collections::HashMap;
-use std::collections::HashSet;
 use tabled::{
     builder::Builder,
-    settings::{object::Rows, Alignment, Modify, Style},
+    settings::{object::Rows, Alignment, Style},
 };
-extern crate chrono;
-
 mod graphql_json;
 mod parameters;
-
-const QUERY: &str = r#"
-query prs($owner: String!, $name: String!) {
-  repository(owner: $owner, name: $name) {
-    pullRequests(
-      states: [MERGED]
-      first: 100
-      orderBy: {direction: DESC, field: CREATED_AT}
-    ) {
-      totalCount
-      nodes {
-        mergedAt
-        number
-        author {
-          login
-        }
-        reviews(first: 100, states: [COMMENTED, APPROVED]) {
-          totalCount
-          nodes {
-            author {
-              login
-            }
-            state
-            submittedAt
-          }
-        }
-      }
-    }
-  }
-}
-"#;
-
-fn normalize(author_pr_created: HashMap<String, i32>, total_prs: u32) -> HashMap<String, f32> {
-    author_pr_created
-        .into_iter()
-        .filter(|(_, v)| (*v as f32) / (total_prs as f32) > 0.0)
-        .map(|(k, v)| (k, v as f32))
-        .collect()
-}
+mod download_pr_data;
+mod parse;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let params = parameters::Paramaters::new();
-    let endpoint = "https://api.github.com/graphql";
 
-    println!(
-        "\nRetrieving GitHub stats from up to the last 100 pull requests for {}/{} ...\n",
-        params.owner, params.repo
-    );
+    let data = download_pr_data::download_pr_data(&params).await;
 
-    let mut headers = HashMap::new();
-    headers.insert("Authorization", format!("Bearer {}", params.token));
-    headers.insert("User-Agent", "gql-client".to_string());
-    let client = Client::new_with_headers(endpoint, headers);
-
-    let vars = graphql_json::Vars {
-        owner: params.owner,
-        name: params.repo,
-    };
-    let data = client
-        .query_with_vars_unwrap::<graphql_json::Data, graphql_json::Vars>(QUERY, vars)
-        .await
-        .unwrap();
-
-    let mut author_pr_created = HashMap::new();
-    let mut author_pr_approved = HashMap::new();
-    let mut author_pr_comments = HashMap::new();
-
-    data.repository.pull_requests.nodes.iter().for_each(|pr| {
-        let author = &pr.author.login;
-
-        // Ignore the author if they are in the ignored list
-        if params.ignored_users.contains(&author) {
-            return;
-        }
-
-        let count = author_pr_created.entry(author.clone()).or_insert(0);
-        *count += 1;
-
-        let mut seen_reviewer_for_state = HashSet::new();
-
-        pr.reviews.nodes.iter().for_each(|review| {
-            let reviewer = &review.author.login;
-
-            // Ignore the reviewer if they are the author as well, e.g. they commentef on their own PR
-            if reviewer == author {
-                return;
-            }
-
-            // Ignore the reviewer if they are in the ignored list
-            if params.ignored_users.contains(&reviewer) {
-                return;
-            }
-
-            // Don't count the same reviewer twice for the same thing
-            if !seen_reviewer_for_state.contains(&(reviewer.clone(), review.state.clone())) {
-                seen_reviewer_for_state.insert((reviewer.clone(), review.state.clone()));
-
-                if review.state == "APPROVED" {
-                    let count = author_pr_approved.entry(reviewer.clone()).or_insert(0);
-                    *count += 1;
-                }
-                if review.state == "COMMENTED" {
-                    let count = author_pr_comments.entry(reviewer.clone()).or_insert(0);
-                    *count += 1;
-                }
-            }
-        });
-    });
-
-    let mut all_users = HashSet::new();
-    all_users.extend(author_pr_created.keys().cloned());
-    all_users.extend(author_pr_approved.keys().cloned());
-    all_users.extend(author_pr_comments.keys().cloned());
-
-    let mut all_users: Vec<String> = all_users.into_iter().collect();
-    all_users.sort();
-
-    // Fill in the blanks for each user
-    all_users.iter().for_each(|user| {
-        if !author_pr_created.contains_key(user) {
-            author_pr_created.insert(user.clone(), 0);
-        }
-        if !author_pr_approved.contains_key(user) {
-            author_pr_approved.insert(user.clone(), 0);
-        }
-        if !author_pr_comments.contains_key(user) {
-            author_pr_comments.insert(user.clone(), 0);
-        }
-    });
+    let (author_pr_created, author_pr_approved, author_pr_comments, all_users) = parse::parse_data(&params, data);
 
     let mut builder = Builder::default();
     let header = vec!["User", "% PRs", "% Approved", "% Comments"];
     builder.push_record(header);
 
-    let total_prs = author_pr_created.values().sum::<i32>();
+    let total_prs = author_pr_created.values().sum::<u32>();
     print!("Found a total of {} PRs", total_prs);
     if params.ignored_users.len() > 0 {
         print!(" (with filters applied)",);
@@ -182,3 +57,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
