@@ -29,7 +29,7 @@ Found a total of 96 PRs (with filters applied)
 ╭─────────────┬───────┬────────────┬────────────╮
 │ User        │ % PRs │ % Approved │ % Comments │
 ├─────────────┼───────┼────────────┼────────────┤
-│  sam.mckee  │    17 │         76 │         54 │
+│   sam.mckee │    17 │         76 │         54 │
 │     cindy13 │    22 │         77 │         52 │
 │        jane │    27 │         76 │         58 │
 │ longer.name │    17 │         42 │         27 │
