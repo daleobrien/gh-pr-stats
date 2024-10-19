@@ -16,8 +16,7 @@ pub fn parse_data(params: &Paramaters, data: Data) -> (HashMap<String, u32>, Has
             return;
         }
 
-        let count = author_pr_created.entry(author.clone()).or_insert(0);
-        *count += 1;
+     *author_pr_created.entry(author.clone()).or_insert(0) += 1;
 
         let mut seen_reviewer_for_state = HashSet::new();
 
