@@ -1,9 +1,16 @@
-use std::collections::{HashMap, HashSet};
 use crate::graphql_json::Data;
 use crate::parameters::Paramaters;
+use std::collections::{HashMap, HashSet};
 
-pub fn parse_data(params: &Paramaters, data: Data) -> (HashMap<String, u32>, HashMap<String, u32>, HashMap<String, u32>, Vec<String>) {
-
+pub fn parse_data(
+    params: &Paramaters,
+    data: Data,
+) -> (
+    HashMap<String, u32>,
+    HashMap<String, u32>,
+    HashMap<String, u32>,
+    Vec<String>,
+) {
     let mut author_pr_created = HashMap::new();
     let mut author_pr_approved = HashMap::new();
     let mut author_pr_comments = HashMap::new();
@@ -16,7 +23,8 @@ pub fn parse_data(params: &Paramaters, data: Data) -> (HashMap<String, u32>, Has
             return;
         }
 
-     *author_pr_created.entry(author.clone()).or_insert(0) += 1;
+        // Increment the PR count for the author
+        *author_pr_created.entry(author.clone()).or_insert(0) += 1;
 
         let mut seen_reviewer_for_state = HashSet::new();
 
@@ -38,12 +46,10 @@ pub fn parse_data(params: &Paramaters, data: Data) -> (HashMap<String, u32>, Has
                 seen_reviewer_for_state.insert((reviewer.clone(), review.state.clone()));
 
                 if review.state == "APPROVED" {
-                    let count = author_pr_approved.entry(reviewer.clone()).or_insert(0);
-                    *count += 1;
+                    *author_pr_approved.entry(reviewer.clone()).or_insert(0) += 1;
                 }
                 if review.state == "COMMENTED" {
-                    let count = author_pr_comments.entry(reviewer.clone()).or_insert(0);
-                    *count += 1;
+                    *author_pr_comments.entry(reviewer.clone()).or_insert(0) += 1;
                 }
             }
         });
@@ -69,5 +75,10 @@ pub fn parse_data(params: &Paramaters, data: Data) -> (HashMap<String, u32>, Has
             author_pr_comments.insert(user.clone(), 0);
         }
     });
-    (author_pr_created, author_pr_approved, author_pr_comments, all_users)
+    (
+        author_pr_created,
+        author_pr_approved,
+        author_pr_comments,
+        all_users,
+    )
 }
