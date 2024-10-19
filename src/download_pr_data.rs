@@ -46,15 +46,16 @@ pub async fn download_pr_data(params: &Paramaters) -> Data {
     let mut headers = HashMap::new();
     headers.insert("Authorization", format!("Bearer {}", params.token));
     headers.insert("User-Agent", "gql-client".to_string());
+
     let client = Client::new_with_headers(endpoint, headers);
 
     let vars = graphql_json::Vars {
         owner: params.owner.clone(),
         name: params.repo.clone(),
     };
-    let data = client
+
+    client
         .query_with_vars_unwrap::<graphql_json::Data, graphql_json::Vars>(QUERY, vars)
         .await
-        .unwrap();
-    data
+        .unwrap()
 }
