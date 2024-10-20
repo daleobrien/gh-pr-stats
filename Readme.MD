@@ -44,4 +44,5 @@ Key:
 * `% Comments`: The percentage of PRs commented on (1,2).
 
 (1) The percent also includes the PRs they have created since they would consider them good to go.
+
 (2) Many comments on a given PR only count as one.
