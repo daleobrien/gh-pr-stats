@@ -40,9 +40,8 @@ Found a total of 96 PRs (with filters applied)
 ```
 Key:
 * `% PRs`: The percentage of PRs created.
-* `% Approved`: The percentage of PRs approved (1). 
-* `% Comments`: The percentage of PRs commented on (1,2).
+* `% Approved`: The percentage of PRs approved<sub>1</sub>. 
+* `% Comments`: The percentage of PRs commented on<sub>1,2</sub>.
 
-(1) The percent also includes the PRs they have created since they would consider them good to go.
-
-(2) Many comments on a given PR only count as one.
+**(1) The percent also includes the PRs they have created since they would consider them good to go.
+(2) Many comments on a given PR only count as one.**
