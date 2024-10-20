@@ -6,7 +6,7 @@ pub(crate) fn env_var_to_string(env_name: &str) -> Result<String, Error> {
     if owner.is_err() {
         return Err(Error);
     }
-    return Ok(owner.unwrap());
+    Ok(owner.unwrap())
 }
 
 pub(crate) struct Paramaters {

@@ -14,19 +14,19 @@ query prs($owner: String!, $name: String!) {
     ) {
       totalCount
       nodes {
-        mergedAt
-        number
+        #mergedAt
+        #number
         author {
           login
         }
         reviews(first: 100, states: [COMMENTED, APPROVED]) {
-          totalCount
+          #totalCount
           nodes {
             author {
               login
             }
             state
-            submittedAt
+            #submittedAt
           }
         }
       }

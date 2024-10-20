@@ -2,13 +2,16 @@ use crate::graphql_json::Data;
 use crate::parameters::Paramaters;
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
+use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
 
-#[derive(Hash, Eq, PartialEq)]
+#[derive(Hash, Eq, PartialEq, EnumIter)]
 pub enum DataType {
     Approved,
     Commented,
     Created,
 }
+
 
 pub fn parse_data(
     params: &Paramaters,
@@ -16,7 +19,7 @@ pub fn parse_data(
 ) -> (HashMap<DataType, HashMap<String, u32>>, Vec<String>) {
     let mut user_data: HashMap<DataType, HashMap<String, u32>> = HashMap::new();
 
-    for data_type in [DataType::Created, DataType::Approved, DataType::Commented] {
+    for data_type in DataType::iter() {
         user_data.insert(data_type, HashMap::new());
     }
 
@@ -55,7 +58,7 @@ pub fn parse_data(
             if !seen_reviewer_for_state.contains(&(reviewer.clone(), review.state.clone())) {
                 seen_reviewer_for_state.insert((reviewer.clone(), review.state.clone()));
 
-                let dataTypeForState:DataType = match review.state.as_str() {
+                let data_type_for_state: DataType = match review.state.as_str() {
                     "APPROVED" => DataType::Approved,
                     "COMMENTED" => DataType::Commented,
                     _ => {
@@ -64,28 +67,28 @@ pub fn parse_data(
                 };
 
                 *user_data
-                  .get_mut(&dataTypeForState)
-                  .unwrap()
-                  .entry(reviewer.clone())
-                  .or_insert(0) += 1;
+                    .get_mut(&data_type_for_state)
+                    .unwrap()
+                    .entry(reviewer.clone())
+                    .or_insert(0) += 1;
             }
         });
     });
 
     // Get all users
     let mut all_users = HashSet::new();
-    for data_type in &[DataType::Created, DataType::Approved, DataType::Commented] {
-        all_users.extend(user_data.get(data_type).unwrap().keys().cloned());
+    for data_type in DataType::iter() {
+        all_users.extend(user_data.get(&data_type).unwrap().keys().cloned());
     }
     let mut all_users: Vec<String> = all_users.into_iter().collect();
     all_users.sort();
 
     // Fill in the blanks for each user
     all_users.iter().for_each(|user| {
-        for data_type in &[DataType::Created, DataType::Approved, DataType::Commented] {
-            if !user_data.get(data_type).unwrap().contains_key(user) {
+        for data_type in DataType::iter() {
+            if !user_data.get(&data_type).unwrap().contains_key(user) {
                 user_data
-                    .get_mut(data_type)
+                    .get_mut(&data_type)
                     .unwrap()
                     .insert(user.clone(), 0);
             }
