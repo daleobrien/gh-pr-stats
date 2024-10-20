@@ -5,11 +5,10 @@ Quick project to determine the percentage of involvement for each contriber a gi
 *I was wanting to know if each contriber of the team is looking at each other's PRs.*
 
 # Installation
-
+Download and run this. Note that this assumes you have [rust](https://www.rust-lang.org) installed.
 ```bash
-cargo build --release
+cargo build
 ```
-
 
 ## usage:
 ```bash
@@ -17,11 +16,10 @@ export GITHUB_TOKEN=your_github_token
 export GITHUB_REPO=your_github_repo_name
 export GITHUB_OWNER=your_github_owner_name
 
-# optional list of github users/bots to ignore
+# optional list of github users/bots to ignore.
 export IGNORED_USERS='codescene-delta-analysis,coderabbitai'
 
 cargo run
-
 ```
 
 And it will print out the following information:
@@ -41,8 +39,9 @@ Found a total of 96 PRs (with filters applied)
 ╰─────────────┴───────┴────────────┴────────────╯
 ```
 Key:
-* `% PRs`: The percentage of PRs did the user create
-* `% Approved`: The percentage of PRs they have approved (1). 
-* `% Comments`: The percentage of PRs they have commented on (1).
+* `% PRs`: The percentage of PRs created.
+* `% Approved`: The percentage of PRs approved (1). 
+* `% Comments`: The percentage of PRs commented on (1,2).
 
 (1) The percent also includes the PRs they have created since they would consider them good to go.
+(2) Many comments on a given PR only count as one.
