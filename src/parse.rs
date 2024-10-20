@@ -37,6 +37,7 @@ pub fn parse_data(
 
         let mut seen_reviewer_for_state = HashSet::new();
 
+        // Iterate over the reviews for the PR
         pr.reviews.nodes.iter().for_each(|review| {
             let reviewer = &review.author.login;
 
@@ -54,20 +55,19 @@ pub fn parse_data(
             if !seen_reviewer_for_state.contains(&(reviewer.clone(), review.state.clone())) {
                 seen_reviewer_for_state.insert((reviewer.clone(), review.state.clone()));
 
-                if review.state == "APPROVED" {
-                    *user_data
-                        .get_mut(&DataType::Approved)
-                        .unwrap()
-                        .entry(reviewer.clone())
-                        .or_insert(0) += 1;
-                }
-                if review.state == "COMMENTED" {
-                    *user_data
-                        .get_mut(&DataType::Commented)
-                        .unwrap()
-                        .entry(reviewer.clone())
-                        .or_insert(0) += 1;
-                }
+                let dataTypeForState:DataType = match review.state.as_str() {
+                    "APPROVED" => DataType::Approved,
+                    "COMMENTED" => DataType::Commented,
+                    _ => {
+                        return;
+                    }
+                };
+
+                *user_data
+                  .get_mut(&dataTypeForState)
+                  .unwrap()
+                  .entry(reviewer.clone())
+                  .or_insert(0) += 1;
             }
         });
     });
