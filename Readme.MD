@@ -1,5 +1,9 @@
 # Extract some statistical information from the last 100 PRs
 
+Quick project to determine the percentage of involvement for each contriber a given project. 
+
+*I was wanting to know if each contriber of the team is looking at each other's PRs.*
+
 # Installation
 
 ```bash
@@ -36,3 +40,9 @@ Found a total of 96 PRs (with filters applied)
 │    shorter0 │    14 │         40 │         30 │
 ╰─────────────┴───────┴────────────┴────────────╯
 ```
+Key:
+* `% PRs`: The percentage of PRs did the user create
+* `% Approved`: The percentage of PRs they have approved (1). 
+* `% Comments`: The percentage of PRs they have commented on (1).
+
+(1) The percent also includes the PRs they have created since they would consider them good to go.
