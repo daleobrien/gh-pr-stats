@@ -43,5 +43,6 @@ Key:
 * `% Approved`: The percentage of PRs approved<sub>1</sub>. 
 * `% Comments`: The percentage of PRs commented on<sub>1,2</sub>.
 
-**(1) The percent also includes the PRs they have created since they would consider them good to go.
-(2) Many comments on a given PR only count as one.**
+*(1) The percent also includes the PRs they have created since they would consider them good to go.
+
+(2) Many comments on a given PR only count as one.*
