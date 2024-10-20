@@ -1,8 +1,8 @@
-# Extract some statistical information from the last 100 PRs
+# Extract user contribution from the last 100 PRs
 
 Quick project to determine the percentage of involvement for each contriber a given project. 
 
-*I was wanting to know if each contriber of the team is looking at each other's PRs.*
+*I was wanting to know if each contribution of the team is looking at each other's PRs.*
 
 # Installation
 Download and run this. Note that this assumes you have [rust](https://www.rust-lang.org) installed.
@@ -24,7 +24,6 @@ cargo run
 
 And it will print out the following information:
 ```text
-
 Retrieving GitHub stats from up to the last 100 pull requests for Someone/Something ...
 
 Found a total of 96 PRs (with filters applied)
@@ -40,9 +39,8 @@ Found a total of 96 PRs (with filters applied)
 ```
 Key:
 * `% PRs`: The percentage of PRs created.
-* `% Approved`: The percentage of PRs approved<sub>1</sub>. 
-* `% Comments`: The percentage of PRs commented on<sub>1,2</sub>.
+* `% Approved`: The percentage of PRs approved.<sub>**1**</sub>
+* `% Comments`: The percentage of PRs commented on.<sub>**1**,**2**</sub>
 
-*(1) The percent also includes the PRs they have created since they would consider them good to go.
-
+*(1) The percent also includes the PRs they have created since they would consider them good to go.</br>
 (2) Many comments on a given PR only count as one.*
