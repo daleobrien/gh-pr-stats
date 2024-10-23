@@ -67,7 +67,7 @@ pub fn print_data_as_table(
         for user2 in all_users {
             let c = user_to_user_pr_count.get(&(user.clone(), user2.clone()));
             if user == user2 {
-                relationship_header.push("".to_string());
+                relationship_header.push("-".to_string());
                 continue;
             }
             relationship_header.push(c.unwrap_or(&0).to_string())
