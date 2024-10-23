@@ -5,6 +5,14 @@ use tabled::builder::Builder;
 use tabled::settings::object::Rows;
 use tabled::settings::{Alignment, Style};
 
+fn pad_string(s: &str, len: usize) -> String {
+    let mut s = s.to_string();
+    while s.len() < len {
+        s.push(' ');
+    }
+    s
+}
+
 pub fn print_data_as_table(
     params: Paramaters,
     user_data: HashMap<DataType, HashMap<String, u32>>,
@@ -15,9 +23,13 @@ pub fn print_data_as_table(
     let stats_header = vec!["User", "PRs", "Approved", "Comments"];
     stats_builder.push_record(stats_header);
 
+    // Find the longest username for formatting
+    let max_user_len = all_users.iter().map(|u| u.len()).max().unwrap();
+
     let mut relationship_builder = Builder::default();
     let mut relationship_header = vec!["Reviewer\\Author"];
     for user in all_users {
+        let padded = pad_string(user, max_user_len);
         relationship_header.push(user);
     }
     relationship_builder.push_record(relationship_header);
@@ -28,7 +40,7 @@ pub fn print_data_as_table(
         .values()
         .sum::<u32>();
     print!("Found a total of {} PRs", total_prs);
-    if params.ignored_users.len() > 0 {
+    if !params.ignored_users.is_empty() {
         print!(" (with filters applied)",);
     }
     println!("");
@@ -63,16 +75,17 @@ pub fn print_data_as_table(
             comment_percentage.to_string(),
         ];
         stats_builder.push_record(row);
-        let mut relationship_header = vec![user.clone()];
+
+        let mut relationship_row = vec![pad_string(user, max_user_len)];
         for user2 in all_users {
             let c = user_to_user_pr_count.get(&(user.clone(), user2.clone()));
             if user == user2 {
-                relationship_header.push("-".to_string());
+                relationship_row.push("-".to_string());
                 continue;
             }
-            relationship_header.push(c.unwrap_or(&0).to_string())
+            relationship_row.push(c.unwrap_or(&0).to_string())
         }
-        relationship_builder.push_record(relationship_header);
+        relationship_builder.push_record(relationship_row);
     }
 
     println!("Statistics [%]:");
