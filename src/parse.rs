@@ -12,12 +12,16 @@ pub enum DataType {
     Created,
 }
 
-
 pub fn parse_data(
     params: &Paramaters,
     data: Data,
-) -> (HashMap<DataType, HashMap<String, u32>>, Vec<String>) {
+) -> (
+    HashMap<DataType, HashMap<String, u32>>,
+    Vec<String>,
+    HashMap<(String, String), u32>,
+) {
     let mut user_data: HashMap<DataType, HashMap<String, u32>> = HashMap::new();
+    let mut user_to_user_pr_count: HashMap<(String, String), u32> = HashMap::new();
 
     for data_type in DataType::iter() {
         user_data.insert(data_type, HashMap::new());
@@ -66,6 +70,12 @@ pub fn parse_data(
                     }
                 };
 
+                if review.state == "APPROVED" {
+                    // Record the user to reviewer PR approval count
+                    let key = (reviewer.clone(), author.clone());
+                    *user_to_user_pr_count.entry(key.clone()).or_insert(0) += 1;
+                }
+
                 *user_data
                     .get_mut(&data_type_for_state)
                     .unwrap()
@@ -95,5 +105,5 @@ pub fn parse_data(
         }
     });
 
-    (user_data, all_users)
+    (user_data, all_users, user_to_user_pr_count)
 }
