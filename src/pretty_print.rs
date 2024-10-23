@@ -12,7 +12,7 @@ pub fn print_data_as_table(
     user_to_user_pr_count: HashMap<(String, String), u32>,
 ) {
     let mut stats_builder = Builder::default();
-    let stats_header = vec!["User", "% PRs", "% Approved", "% Comments"];
+    let stats_header = vec!["User", "PRs", "Approved", "Comments"];
     stats_builder.push_record(stats_header);
 
     let mut relationship_builder = Builder::default();
@@ -75,7 +75,7 @@ pub fn print_data_as_table(
         relationship_builder.push_record(relationship_header);
     }
 
-    println!("Statistics:");
+    println!("Statistics [%]:");
     let table = stats_builder
         .build()
         .with(Style::rounded())
@@ -83,7 +83,7 @@ pub fn print_data_as_table(
         .to_string();
     println!("{table}");
 
-    println!("Relationships:");
+    println!("Relationships [count]:");
     let table = relationship_builder
         .build()
         .with(Style::rounded())
