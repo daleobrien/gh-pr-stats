@@ -14,6 +14,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     pretty_print::print_data_as_table(params, user_data, &all_users, user_to_user_pr_count);
 
-    // TODO: It would be nice to create a table the shows the number of % PRs approved by each user against each user
     Ok(())
 }

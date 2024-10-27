@@ -1,9 +1,11 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]
 pub struct Vars {
     pub(crate) owner: String,
     pub(crate) name: String,
+    pub(crate) after: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -19,16 +21,17 @@ pub struct Repository {
 
 #[derive(Deserialize, Debug)]
 pub struct PullRequests {
-    // #[serde(rename = "totalCount")]
-    // pub(crate) total_count: u32,
     pub(crate) nodes: Vec<PRNode>,
+    #[serde(rename = "pageInfo")]
+    pub(crate) page_info: PageInfo,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct PRNode {
+    #[serde(rename = "createdAt")]
+    pub(crate) created_at: Option<DateTime<Utc>>,
     // #[serde(rename = "mergedAt")]
-    // pub(crate) merged_at: String,
-    // pub(crate) number: u32,
+    // pub(crate) merged_at: Option<DateTime<Utc>>,
     pub(crate) author: Author,
     pub(crate) reviews: Reviews,
 }
@@ -50,6 +53,16 @@ pub struct Reviews {
 pub struct ReviewNode {
     pub(crate) state: String,
     // #[serde(rename = "submittedAt")]
-    // pub(crate) submitted_at: String,
+    // pub(crate) submitted_at: Option<DateTime<Utc>>,
     pub(crate) author: Author,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct PageInfo {
+    #[serde(rename = "endCursor")]
+    pub(crate) end_cursor: Option<String>,
+    // #[serde(rename = "startCursor")]
+    // pub(crate) start_cursor: Option<String>,
+    #[serde(rename = "hasNextPage")]
+    pub(crate) has_next_page: bool,
 }

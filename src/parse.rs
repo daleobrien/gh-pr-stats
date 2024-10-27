@@ -1,4 +1,4 @@
-use crate::graphql_json::Data;
+use crate::graphql_json::PRNode;
 use crate::parameters::Paramaters;
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
@@ -14,7 +14,7 @@ pub enum DataType {
 
 pub fn parse_data(
     params: &Paramaters,
-    data: Data,
+    data: Vec<PRNode>,
 ) -> (
     HashMap<DataType, HashMap<String, u32>>,
     Vec<String>,
@@ -27,7 +27,7 @@ pub fn parse_data(
         user_data.insert(data_type, HashMap::new());
     }
 
-    data.repository.pull_requests.nodes.iter().for_each(|pr| {
+    data.iter().for_each(|pr| {
         let author = &pr.author.login;
 
         // Ignore the author if they are in the ignored list

@@ -28,8 +28,11 @@ pub fn print_data_as_table(
     let max_user_len = all_users.iter().map(|u| u.len()).max().unwrap();
 
     let mut relationship_builder = Builder::default();
-    let mut relationship_header:Vec<String> = vec!["Reviewer\\Author".to_string()];
-    let header = all_users.iter().map(|u| left_pad(u, max_user_len)).collect::<Vec<String>>();
+    let mut relationship_header: Vec<String> = vec!["Reviewer\\Author".to_string()];
+    let header = all_users
+        .iter()
+        .map(|u| left_pad(u, max_user_len))
+        .collect::<Vec<String>>();
     relationship_header.extend(header);
     relationship_builder.push_record(relationship_header);
 
@@ -38,11 +41,21 @@ pub fn print_data_as_table(
         .unwrap()
         .values()
         .sum::<u32>();
-    print!("Found a total of {} PRs", total_prs);
+
+    print!(
+        "Found a total of {total_prs} PRs that were created in the last {days_ago} days",
+        days_ago = params.days_ago
+    );
+
     if !params.ignored_users.is_empty() {
-        print!(" (with filters applied)",);
+        print!(" excluding these users:");
+        for user in &params.ignored_users {
+            print!("\n * '{}'", user);
+        }
+        println!("");
+    } else {
+        println!(".");
     }
-    println!("");
 
     for user in all_users {
         let pr_created_n = user_data

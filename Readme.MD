@@ -1,6 +1,6 @@
 # Extract user contribution from the last 100 PRs
 
-Quick project to determine the percentage of involvement for each contriber a given project. 
+Quick project to determine the percentage of involvement for each contriber a given project.
 
 *I was wanting to know if each contribution of the team is looking at each other's PRs.*
 
@@ -12,12 +12,16 @@ cargo build
 
 ## usage:
 ```bash
-export GITHUB_TOKEN=your_github_token
-export GITHUB_REPO=your_github_repo_name
-export GITHUB_OWNER=your_github_owner_name
+# Required environment variables
+export GITHUB_TOKEN=<your_github_token>
+export GITHUB_REPO=<your_github_repo_name>
+export GITHUB_OWNER=<your_github_owner_name>
 
-# optional list of github users/bots to ignore.
-export IGNORED_USERS='codescene-delta-analysis,coderabbitai'
+# Optional list of github users/bots to ignore, e.g.
+export GITHUB_STATS_IGNORED_USERS='codescene-delta-analysis,coderabbitai'
+
+# Optional number of days to look back, e.g.
+export GITHUB_STATS_DAYS_AGO=60
 
 cargo run
 ```
